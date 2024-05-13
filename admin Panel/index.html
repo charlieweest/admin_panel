@@ -1,0 +1,843 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Admin Panel</title>
+</head>
+<body>
+    <style>
+        
+
+* {
+    margin: 0;
+    padding: 0;
+
+    box-sizing: border-box;
+    font-family: sans-serif;
+}
+@media print {
+ .table, .table__body {
+  overflow: visible;
+  height: auto !important;
+  width: auto !important;
+ }
+}
+body {
+    min-height: 100vh;
+    background: url(image/image.png) center / cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+main.table {
+    width: 82vw;
+    height: 90vh;
+    background-color: #fff5;
+
+    backdrop-filter: blur(7px);
+    box-shadow: 0 .4rem .8rem #0005;
+    border-radius: .8rem;
+
+    overflow: hidden;
+}
+
+.table__header {
+    width: 100%;
+    height: 10%;
+    background-color: #fff4;
+    padding: .8rem 1rem;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.table__header .input-group {
+    width: 35%;
+    height: 100%;
+    background-color: #fff5;
+    padding: 0 .8rem;
+    border-radius: 2rem;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    transition: .2s;
+}
+
+.table__header .input-group:hover {
+    width: 45%;
+    background-color: #fff8;
+    box-shadow: 0 .1rem .4rem #0002;
+}
+
+
+.table__header .input-group input {
+    width: 100%;
+    padding: 0 .5rem 0 .3rem;
+    background-color: transparent;
+    border: none;
+    outline: none;
+}
+
+.table__body {
+    width: 95%;
+    max-height: calc(89% - 1.6rem);
+    background-color: #fffb;
+
+    margin: .8rem auto;
+    border-radius: .6rem;
+
+    overflow: auto;
+    overflow: overlay;
+}
+
+
+.table__body::-webkit-scrollbar{
+    width: 0.5rem;
+    height: 0.5rem;
+}
+
+.table__body::-webkit-scrollbar-thumb{
+    border-radius: .5rem;
+    background-color: #0004;
+    visibility: hidden;
+}
+
+.table__body:hover::-webkit-scrollbar-thumb{ 
+    visibility: visible;
+}
+
+
+table {
+    width: 100%;
+}
+
+td img {
+    width: 36px;
+    height: 36px;
+    margin-right: .5rem;
+    border-radius: 50%;
+
+    vertical-align: middle;
+}
+
+table, th, td {
+    border-collapse: collapse;
+    padding: 1rem;
+    text-align: left;
+}
+
+thead th {
+    position: sticky;
+    top: 0;
+    left: 0;
+    background-color: #d5d1defe;
+    cursor: pointer;
+    text-transform: capitalize;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #0000000b;
+}
+
+tbody tr {
+    --delay: .1s;
+    transition: .5s ease-in-out var(--delay), background-color 0s;
+}
+
+
+@media (max-width: 1000px) {
+    td:not(:first-of-type) {
+        min-width: 12.1rem;
+    }
+}
+
+thead th span.icon-arrow {
+    display: inline-block;
+    width: 1.3rem;
+    height: 1.3rem;
+    border-radius: 50%;
+    border: 1.4px solid transparent;
+    
+    text-align: center;
+    font-size: 1rem;
+    
+    margin-left: .5rem;
+    transition: .2s ease-in-out;
+}
+
+thead th:hover span.icon-arrow{
+    border: 1.4px solid #6c00bd;
+}
+
+thead th:hover {
+    color: #6c00bd;
+}
+
+thead th.active span.icon-arrow{
+    background-color: #6c00bd;
+    color: #fff;
+}
+
+thead th.asc span.icon-arrow{
+    transform: rotate(180deg);
+}
+
+thead th.active,tbody td.active {
+    color: #6c00bd;
+}
+.inputField {
+    display: flex;
+    gap: 33px;
+}
+input{
+    height: 35px;
+    border-radius: 9px;
+    width: 96%;
+
+}
+.trc_button {
+    display: inline-block;
+    width: 150px;
+    height: 50px;
+    border-radius: 10px;
+    border: 1px solid #03045e;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.5s ease-in;
+    z-index: 1;
+    left: 88%;
+    top: -12px;
+   }
+   
+   .trc_button::before,
+   .trc_button::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 0;
+    height: 100%;
+    transform: skew(15deg);
+    transition: all 0.5s;
+    overflow: hidden;
+    z-index: -1;
+   }
+   
+   .trc_button::before {
+    left: -10px;
+    background: #240046;
+   }
+   
+   .trc_button::after {
+    right: -10px;
+    background: #5a189a;
+   }
+   
+   .trc_button:hover::before,
+   .trc_button:hover::after {
+    width: 58%;
+   }
+   
+   .trc_button:hover span {
+    color: #e0aaff;
+    transition: 0.3s;
+   }
+   
+   trc_button span {
+    color: #03045e;
+    font-size: 18px;
+    transition: all 0.3s ease-in;
+   }
+   #trcmodal{
+       display: none;
+       position: fixed;
+       z-index: 1;
+       left: 0;
+       top: 0;
+       width: 100%;
+       height: 100%;
+       overflow: auto;
+       background-color: rgba(0, 0, 0, 0.4);
+   }
+   button#admin_button {
+    left: -155px;
+} 
+
+
+.modal {
+    display: none; /* Hide the modal by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  }
+  
+  .modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 30%;
+    border-radius: 20px;
+  }
+  
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 350px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 20px;
+    position: relative;
+  }
+  
+  .title {
+    font-size: 28px;
+    color: royalblue;
+    font-weight: 600;
+    letter-spacing: -1px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding-left: 30px;
+  }
+  
+  .title::before,.title::after {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    left: 0px;
+    background-color: royalblue;
+  }
+  
+  .title::before {
+    width: 18px;
+    height: 18px;
+    background-color: royalblue;
+  }
+  
+  .title::after {
+    width: 18px;
+    height: 18px;
+    animation: pulse 1s linear infinite;
+  }
+  
+  .message, .signin {
+    color: rgba(88, 87, 87, 0.822);
+    font-size: 14px;
+  }
+  
+  .signin {
+    text-align: center;
+  }
+  
+  .signin a {
+    color: royalblue;
+  }
+  .btn_button {
+  width: 140px;
+  height: 40px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(to right,#77530a,#ffd277,#77530a,#77530a,#ffd277,#77530a);
+  background-size: 250%;
+  background-position: left;
+  color: #ffd277;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition-duration: 1s;
+  overflow: hidden;
+}
+
+.btn_button::before {
+  content: "Calculate";
+  position: absolute;
+  color: #ffd277;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 97%;
+  height: 90%;
+  border-radius: 8px;
+  transition-duration: 1s;
+  background-color: rgba(0, 0, 0, 0.842);
+  background-size: 200%;
+}
+
+.btn_button:hover {
+  background-position: right;
+  transition-duration: 1s;
+}
+
+.btn_button:hover::before {
+  background-position: right;
+  transition-duration: 1s;
+}
+
+.btn_button:active {
+  transform: scale(0.95);
+}
+  
+  .signin a:hover {
+    text-decoration: underline royalblue;
+  }
+  
+  .flex {
+    display: flex;
+    width: 100%;
+    gap: 9px;
+    flex-direction: column;
+  }
+  .perviousTrcaddress{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .form label {
+    position: relative;
+  }
+  
+  .form label .input {
+    width: 100%;
+    padding: 10px 10px 40px 10px;
+    outline: 0;
+    border: 1px solid rgba(105, 105, 105, 0.397);
+    border-radius: 10px;
+  }
+  
+  .form label .input + span {
+    position: absolute;
+    left: 10px;
+    top: 15px;
+    color: grey;
+    font-size: 0.9em;
+    cursor: text;
+    transition: 0.3s ease;
+  }
+  
+  .form label .input:placeholder-shown + span {
+    top: 15px;
+    font-size: 0.9em;
+  }
+  
+  .form label .input:focus + span,.form label .input:valid + span {
+    top: 30px;
+    font-size: 0.7em;
+    font-weight: 600;
+  }
+  
+  .submit {
+    border: none;
+    outline: none;
+    background-color: royalblue;
+    padding: 10px;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 16px;
+    transform: .3s ease;
+  }
+  
+  .submit:hover {
+    background-color: rgb(56, 90, 194);
+  }
+  
+  @keyframes pulse {
+    from {
+      transform: scale(0.9);
+      opacity: 1;
+    }
+  
+    to {
+      transform: scale(1.8);
+      opacity: 0;
+    }
+  }
+  .switch {
+    position: relative;
+    height: 1.5rem;
+    width: 3rem;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    border-radius: 9999px;
+    background-color: rgba(100, 116, 139, 0.377);
+    transition: all .3s ease;
+  }
+  
+  .switch:checked {
+    background-color: rgba(236, 72, 153, 1);
+  }
+  
+  .switch::before {
+    position: absolute;
+    content: "";
+    left: calc(1.5rem - 1.6rem);
+    top: calc(1.5rem - 1.6rem);
+    display: block;
+    height: 1.6rem;
+    width: 1.6rem;
+    cursor: pointer;
+    border: 1px solid rgba(100, 116, 139, 0.527);
+    border-radius: 9999px;
+    background-color: rgba(255, 255, 255, 1);
+    box-shadow: 0 3px 10px rgba(100, 116, 139, 0.327);
+    transition: all .3s ease;
+  }
+  
+  .switch:hover::before {
+    box-shadow: 0 0 0px 8px rgba(0, 0, 0, .15)
+  }
+  
+  .switch:checked:hover::before {
+    box-shadow: 0 0 0px 8px rgba(236, 72, 153, .15)
+  }
+  
+  .switch:checked:before {
+    transform: translateX(100%);
+    border-color: rgba(236, 72, 153, 1);
+  }
+  
+  .delete {
+    background-color: transparent;
+    position: relative;
+    border: none;
+  }
+  
+  .delete::after {
+    content: 'delete';
+    position: absolute;
+    top: -130%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: fit-content;
+    height: fit-content;
+    background-color: rgb(168, 7, 7);
+    padding: 4px 8px;
+    border-radius: 5px;
+    transition: .2s linear;
+    transition-delay: .2s;
+    color: white;
+    text-transform: uppercase;
+    font-size: 12px;
+    opacity: 0;
+    visibility: hidden;
+  }
+  
+  .icon {
+    transform: scale(1.2);
+    transition: .2s linear;
+  }
+  
+  .delete:hover > .icon {
+    transform: scale(1.5);
+  }
+  
+  .delete:hover > .icon path {
+    fill: rgb(168, 7, 7);
+  }
+  
+  .delete:hover::after {
+    visibility: visible;
+    opacity: 1;
+    top: -160%;
+  }
+  
+    </style>
+<section class="p-3">
+    <button class="trc_button" id="trc_buttons">
+        <span> Change Trc 20 
+        </span>
+      </button>
+    <button class="trc_button add_admin" id="admin_button">
+        <span> 
+            Add Admins
+        </span>
+      </button>
+    <main class="table" id="customers_table">
+        <section class="table__header">
+            <h1>Admins Panel</h1>
+        </section>
+        <section class="table__body">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Password</th>
+                        <th>Block User</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody id="table_body">
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <div id="table_body"></div>
+</section>
+<!-- modal for add_admin  -->
+<div id="Useradd" class="modal">
+    <div class="modal-content">
+      <form id="admin_form" class="form">
+        <p class="title">Add Admin</p>
+        <div class="flex">
+            <label>
+                <input id="name" type="text" class="input" required> <!-- Check if IDs match -->
+                <span>Username</span>
+            </label>
+    
+            <label>
+                <input id="email" type="email" class="input" required> <!-- Check if IDs match -->
+                <span>Email</span>
+            </label>
+        </div>  
+            <label>
+                <input id="password" type="password" class="input" required> <!-- Check if IDs match -->
+                <span>Password</span>
+            </label>
+            <button class="submit" type="button" id="admin_submit">Save</button>
+        </div>  
+    </form>
+    </div> 
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+import {
+  getDatabase,
+  push,
+  set,
+  ref,
+  get,
+  update,
+} from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+} from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyATGfQEtieBfoKz4wv2SUGiuVRF8y1gkLY",
+  authDomain: "travel-world-com.firebaseapp.com",
+  projectId: "travel-world-com",
+  storageBucket: "travel-world-com.appspot.com",
+  messagingSenderId: "158600558653",
+  appId: "1:158600558653:web:3a75cf8ddc8f6bd8e7d254",
+  measurementId: "G-CFBX4FKWW1",
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth();
+const database = getDatabase(app);
+
+const admin_button = document.getElementById("admin_button");
+const UseraddModal = document.getElementById("Useradd");
+
+admin_button.addEventListener("click", () => {
+  UseraddModal.style.display = "block";
+});
+
+UseraddModal.addEventListener("click", (event) => {
+  if (event.target === UseraddModal) {
+    UseraddModal.style.display = "none";
+  }
+})
+const createUser = document.getElementById("admin_submit");
+createUser.addEventListener("click", (evt) => {
+  evt.preventDefault();
+  const name = document.getElementById("name").value;
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  createUserWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      const user = userCredential.user;
+      const userRef = ref(database, `admins/${user.uid}`);
+      set(userRef, {
+        username: name,
+        email: email,
+        password: password,
+        enable: true,
+      }).then(() => {
+        alert("Admin created successfully!");
+        window.location.reload();
+      });
+    })
+    .catch((error) => {
+      console.error(error);
+      alert(error.message);
+    });
+});
+
+const table_body = document.getElementById("table_body");
+
+get(ref(database, "/admins"))
+  .then((snapshot) => {
+    const admins = snapshot.val();
+    if (admins) {
+      Object.keys(admins).forEach((key) => {
+        const admin = admins[key];
+        const html = `
+          <tr>
+              <td>${admin.username}</td>
+              <td>${admin.email}</td>
+              <td>${admin.password}</td>
+              <td><a href="" style="text-decoration: none;">
+              <input class="switch" id="enable_disable_${key}" type="checkbox" checked="true" onclick="toggleUser('${key}')"/>
+              </a></td>
+              <td><button class="delete" id="delete_button">  <svg viewBox="0 0 15 17.5" height="17.5" width="15" xmlns="http://www.w3.org/2000/svg" class="icon">
+                  <path transform="translate(-2.5 -1.25)" d="M15,18.75H5A1.251,1.251,0,0,1,3.75,17.5V5H2.5V3.75h15V5H16.25V17.5A1.251,1.251,0,0,1,15,18.75ZM5,5V17.5H15V5Zzm7.5,10H11.25V7.5H12.5V15ZM8.75,15H7.5V7.5H8.75V15ZM12.5,2.5h-5V1.25h5V2.5Z" id="Fill"></path>
+                </svg></td>
+          </tr>
+          `;
+        table_body.innerHTML += html;
+      });
+
+      window.toggleUser = (uid) => {
+        const enableDis = document.querySelector(`#enable_disable_${uid}`);
+        const userRef = ref(database, `admins/${uid}`);
+        update(userRef, {
+          enable: enableDis.checked,
+        })
+        .then(() => {
+          console.log("Trc 20 address updated successfully!");
+          window.location.reload();
+        })
+        .catch((error) => {
+          console.error("Error updating user:", error);
+        });
+      };
+    } else {
+      console.log("No admin data found");
+    }
+  })
+  .catch((error) => {
+    console.error("Error fetching admin data:", error);
+  });
+
+const trc_button = document.getElementById("trc_buttons");
+
+trc_button.addEventListener("click", () => {
+  const html = `
+          <div id="trcmodal">
+              <div class="modal-content">
+                  <form id="editForm" class="form">
+                      <p class="title">Trc 20 Address</p>
+                      <div class="flex">
+                          <label>
+                              <input id="trcInput" type="text" class="input" placeholder="Enter New Trc 20 Address">
+                          </label>
+                          <label>
+                          </label>
+                          <label for="perviousTrcInput" class="label">
+                          <div>Previous Trc 20 Address:</div>
+                          &nbsp
+                          <div class="perviousTrcaddress" id="perviousTrc"></div>
+                          </label>
+                      </div>
+                      <button type="button" class="submit" id="savetrc">Save</button>
+                  </form>
+              </div>
+          </div>
+      `;
+
+  document.body.insertAdjacentHTML("beforeend", html);
+
+  window.modal = document.getElementById("trcmodal");
+  const modal = document.getElementById("trcmodal");
+  modal.style.display = "block";
+
+  const perviousTrc = document.getElementById("perviousTrc");
+  perviousTrc.innerHTML = "";
+
+  const productsRef = ref(database, "trc20");
+  get(productsRef).then((snapshot) => {
+    if (snapshot.exists()) {
+      const products = snapshot.val();
+      const trc = products.trc20;
+      trc.forEach((element) => {
+        const html = `<span>${element}</span>`;
+        perviousTrc.innerHTML += html;
+      });
+    }
+  });
+  const savetrc = document.getElementById("savetrc");
+
+  savetrc.addEventListener("click", () => {
+    const trcInput = document.getElementById("trcInput");
+    console.log(trcInput);
+
+    get(productsRef)
+      .then((snapshot) => {
+        if (snapshot.exists()) {
+          const products = snapshot.val();
+          update(productsRef, {
+            trc20: [...products.trc20, trcInput.value],
+          }).then(() => {
+            alert("New Trc 20 address added successfully!");
+            window.location.reload();
+          });
+        } else {
+          console.log("no data found");
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+  const close_button = document.getElementById("close_button");
+  if (close_button) {
+    close_button.addEventListener("click", () => {
+      const modal = document.getElementById("trcmodal");
+      if (modal) {
+        modal.style.display = "none";
+      }
+    });
+  }
+
+  window.onclick = function (event) {
+    const modal = document.getElementById("trcmodal");
+    if (modal && event.target == modal) {
+      modal.style.display = "none";
+    }
+  };
+});
+document.addEventListener("contextmenu", function(e) {
+  e.preventDefault();
+}, false);
+</script>
+</body>
+</html>
