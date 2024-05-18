@@ -570,8 +570,64 @@ input{
     opacity: 1;
     top: -160%;
   }
-  
+  #loginModal {
+            display: block; /* Show the modal by default */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0 0 0);
+        }
+        .modal-content-login {
+          background-color: #fefefe;
+    margin: 17% auto;
+    padding: 17px;
+    border: 1px solid #888;
+    width: 76%;
+    max-width: 376px;
+    text-align: center;
+    border-radius: 11px;
+        }
+        .modal-content-login .form {
+            display: flex;
+            flex-direction: column;
+        }
+        .modal-content-login .input {
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .password-container {
+            position: relative;
+        }
+        .password-container input[type="password"],
+        .password-container input[type="text"] {
+          width: calc(112% - 30px);
+    height: 50px;
+        }
+        .password-container .toggle-password {
+          position: absolute;
+    top: 40%;
+    right: 10px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 158%;
+        }
     </style>
+     <div id="loginModal">
+      <div class="modal-content-login">
+          <form id="login_form" class="form">
+              <p class="title">Admin Login</p>
+              <div class="password-container">
+                  <input id="login_password" type="password" class="input" placeholder="Enter Password" required>
+                  <span class="toggle-password">👁️</span>
+              </div>
+              <button type="button" class="submit" id="login_submit">Login</button>
+          </form>
+      </div>
+  </div>
 <section class="p-3">
     <button class="trc_button" id="trc_buttons">
         <span> Change Trc 20 
@@ -640,6 +696,7 @@ import {
   ref,
   get,
   update,
+  remove,
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 import {
   getAuth,
@@ -647,7 +704,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
 const firebaseConfig = {
-apiKey: "AIzaSyDMgO0hgIfYKGDGdYC7-gm-5T0DnIPGYe4",
+  apiKey: "AIzaSyDMgO0hgIfYKGDGdYC7-gm-5T0DnIPGYe4",
   authDomain: "hotel-champ.firebaseapp.com",
   projectId: "hotel-champ",
   storageBucket: "hotel-champ.appspot.com",
@@ -702,120 +759,149 @@ createUser.addEventListener("click", (evt) => {
 const table_body = document.getElementById("table_body");
 
 get(ref(database, "/admins"))
-  .then((snapshot) => {
-    const admins = snapshot.val();
-    if (admins) {
-      Object.keys(admins).forEach((key) => {
-        const admin = admins[key];
-        const html = `
-          <tr>
-              <td>${admin.username}</td>
-              <td>${admin.email}</td>
-              <td>${admin.password}</td>
-              <td><a href="" style="text-decoration: none;">
-              <input class="switch" id="enable_disable_${key}" type="checkbox" checked="true" onclick="toggleUser('${key}')"/>
-              </a></td>
-              <td><button class="delete" id="delete_button">  <svg viewBox="0 0 15 17.5" height="17.5" width="15" xmlns="http://www.w3.org/2000/svg" class="icon">
-                  <path transform="translate(-2.5 -1.25)" d="M15,18.75H5A1.251,1.251,0,0,1,3.75,17.5V5H2.5V3.75h15V5H16.25V17.5A1.251,1.251,0,0,1,15,18.75ZM5,5V17.5H15V5Zzm7.5,10H11.25V7.5H12.5V15ZM8.75,15H7.5V7.5H8.75V15ZM12.5,2.5h-5V1.25h5V2.5Z" id="Fill"></path>
-                </svg></td>
-          </tr>
-          `;
-        table_body.innerHTML += html;
-      });
+          .then((snapshot) => {
+            const admins = snapshot.val();
+            if (admins) {
+              Object.keys(admins).forEach((key) => {
+                const admin = admins[key];
+                const html = `
+                  <tr>
+                      <td>${admin.username}</td>
+                      <td>${admin.email}</td>
+                      <td>${admin.password}</td>
+                      <td><a href="" style="text-decoration: none;">
+                      <input class="switch" id="enable_disable_${key}" type="checkbox" checked="true" onclick="toggleUser('${key}')"/>
+                      </a></td>
+                      <td><button class="delete" id="delete_button_${key}" onclick="deleteUser('${key}')">  <svg viewBox="0 0 15 17.5" height="17.5" width="15" xmlns="http://www.w3.org/2000/svg" class="icon">
+                          <path transform="translate(-2.5 -1.25)" d="M15,18.75H5A1.251,1.251,0,0,1,3.75,17.5V5H2.5V3.75h15V5H16.25V17.5A1.251,1.251,0,0,1,15,18.75ZM5,5V17.5H15V5Zzm7.5,10H11.25V7.5H12.5V15ZM8.75,15H7.5V7.5H8.75V15ZM12.5,2.5h-5V1.25h5V2.5Z" id="Fill"></path>
+                        </svg></button></td>
+                  </tr>
+                  `;
+                table_body.innerHTML += html;
+              });
 
-      window.toggleUser = (uid) => {
-        const enableDis = document.querySelector(`#enable_disable_${uid}`);
-        const userRef = ref(database, `admins/${uid}`);
-        update(userRef, {
-          enable: enableDis.checked,
-        })
-        .then(() => {
-          console.log("Trc 20 address updated successfully!");
-          window.location.reload();
-        })
-        .catch((error) => {
-          console.error("Error updating user:", error);
-        });
-      };
-    } else {
-      console.log("No admin data found");
-    }
-  })
-  .catch((error) => {
-    console.error("Error fetching admin data:", error);
-  });
+              window.toggleUser = (uid) => {
+                const enableDis = document.querySelector(`#enable_disable_${uid}`);
+                const userRef = ref(database, `admins/${uid}`);
+                update(userRef, {
+                  enable: enableDis.checked,
+                })
+                .then(() => {
+                  console.log("User enable/disable status updated successfully!");
+                })
+                .catch((error) => {
+                  console.error("Error updating user:", error);
+                });
+              };
 
-const trc_button = document.getElementById("trc_buttons");
+              window.deleteUser = (uid) => {
+                const userRef = ref(database, `admins/${uid}`);
+                remove(userRef)
+                .then(() => {
+                  alert("Admin deleted successfully!");
+                  window.location.reload();
+                })
+                .catch((error) => {
+                  console.error("Error deleting user:", error);
+                });
+              };
+            } else {
+              console.log("No admin data found");
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching admin data:", error);
+          });
+
+
+  const trc_button = document.getElementById("trc_buttons");
 
 trc_button.addEventListener("click", () => {
   const html = `
-          <div id="trcmodal">
-              <div class="modal-content">
-                  <form id="editForm" class="form">
-                      <p class="title">Trc 20 Address</p>
-                      <div class="flex">
-                          <label>
-                              <input id="trcInput" type="text" class="input" placeholder="Enter New Trc 20 Address">
-                          </label>
-                          <label>
-                          </label>
-                          <label for="perviousTrcInput" class="label">
-                          <div>Previous Trc 20 Address:</div>
-                          &nbsp
-                          <div class="perviousTrcaddress" id="perviousTrc"></div>
-                          </label>
-                      </div>
-                      <button type="button" class="submit" id="savetrc">Save</button>
-                  </form>
-              </div>
+    <div id="trcmodal">
+      <div class="modal-content">
+        <form id="editForm" class="form">
+          <p class="title">TRC20 Address</p>
+          <div class="flex">
+            <label>
+              <input id="trcInput" type="text" class="input" placeholder="Enter New TRC20 Address">
+            </label>
+            <label>
+            </label>
+            <label for="previousTrcInput" class="label">
+              <div>Previous TRC20 Addresses:</div>
+              &nbsp
+              <div class="previousTrcAddresses" id="previousTrc"></div>
+            </label>
           </div>
-      `;
+          <button type="button" class="submit" id="savetrc">Save</button>
+        </form>
+      </div>
+    </div>
+  `;
 
   document.body.insertAdjacentHTML("beforeend", html);
 
-  window.modal = document.getElementById("trcmodal");
   const modal = document.getElementById("trcmodal");
   modal.style.display = "block";
 
-  const perviousTrc = document.getElementById("perviousTrc");
-  perviousTrc.innerHTML = "";
+  const previousTrc = document.getElementById("previousTrc");
+  previousTrc.innerHTML = "";
 
   const productsRef = ref(database, "trc20");
   get(productsRef).then((snapshot) => {
     if (snapshot.exists()) {
       const products = snapshot.val();
-      const trc = products.trc20;
-      trc.forEach((element) => {
-        const html = `<span>${element}</span>`;
-        perviousTrc.innerHTML += html;
+      const trc20 = products.trc20 || [];
+      trc20.forEach((address) => {
+        const span = document.createElement("span");
+        span.textContent = address;
+        previousTrc.appendChild(span);
       });
     }
   });
-  const savetrc = document.getElementById("savetrc");
 
-  savetrc.addEventListener("click", () => {
-    const trcInput = document.getElementById("trcInput");
-    console.log(trcInput);
+  const saveTrcButton = document.getElementById("savetrc");
 
-    get(productsRef)
-      .then((snapshot) => {
-        if (snapshot.exists()) {
-          const products = snapshot.val();
-          update(productsRef, {
-            trc20: [...products.trc20, trcInput.value],
-          }).then(() => {
-            alert("New Trc 20 address added successfully!");
+  saveTrcButton.addEventListener("click", () => {
+    const trcInput = document.getElementById("trcInput").value.trim();
+
+    if (!trcInput) {
+      alert("TRC20 Address cannot be empty.");
+      return;
+    }
+
+    const trcRef = ref(database, "trc20");
+
+    get(trcRef).then((snapshot) => {
+      if (snapshot.exists()) {
+        const products = snapshot.val();
+        const trc20 = products.trc20 || [];
+        const updatedTrc20 = [...trc20, trcInput];
+        console.log("Updated TRC20 Addresses:", updatedTrc20);
+
+        update(trcRef, {
+          trc20: updatedTrc20,
+        })
+          .then(() => {
+            alert("New TRC20 address added successfully!");
             window.location.reload();
+          })
+          .catch((error) => {
+            console.error("Error updating TRC20 addresses:", error);
+            alert("Failed to add new TRC20 address.");
           });
-        } else {
-          console.log("no data found");
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+      } else {
+        console.log("No data found for TRC20 addresses.");
+      }
+    }).catch((error) => {
+      console.error("Error fetching TRC20 addresses:", error);
+      alert("Failed to fetch TRC20 addresses.");
+    });
   });
 });
+
+
 
 document.addEventListener("DOMContentLoaded", function () {
   const close_button = document.getElementById("close_button");
@@ -835,6 +921,33 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   };
 });
+
+// Login functionality
+const loginSubmit = document.getElementById("login_submit");
+        const loginPassword = document.getElementById("login_password");
+        const loginModal = document.getElementById("loginModal");
+        const correctPassword = "Charlie786@";
+
+        loginSubmit.addEventListener("click", () => {
+            if (loginPassword.value === correctPassword) {
+                loginModal.style.display = "none";
+            } else {
+                alert("Incorrect password. Please try again.");
+            }
+        });
+
+        // Toggle password visibility
+        const togglePassword = document.querySelector('.toggle-password');
+        togglePassword.addEventListener('click', () => {
+            const passwordInput = document.getElementById("login_password");
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                togglePassword.textContent = "🙈";
+            } else {
+                passwordInput.type = "password";
+                togglePassword.textContent = "👁️";
+            }
+        });
 document.addEventListener("contextmenu", function(e) {
   e.preventDefault();
 }, false);
