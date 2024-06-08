@@ -619,6 +619,61 @@ input{
           display: grid;
           gap: 20px;
         }
+        /* Remember Me checkbox styling */
+.remember-me {
+  display: inline-block;
+  position: relative;
+  padding-left: 25px;
+  margin-top: 10px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.remember-me input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 20px;
+  width: 20px;
+  background-color: #eee;
+  border: 1px solid #aaa;
+  border-radius: 3px;
+}
+
+.remember-me:hover input ~ .checkmark {
+  background-color: #ccc;
+}
+
+.remember-me input:checked ~ .checkmark {
+  background-color: #2196F3;
+}
+
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.remember-me input:checked ~ .checkmark:after {
+  display: block;
+}
+
+.remember-me .checkmark:after {
+  left: 7px;
+  top: 3px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
     </style>
      <div id="loginModal">
       <div class="modal-content-login">
@@ -630,7 +685,13 @@ input{
               </div>
               <button type="button" class="submit" id="login_submit">Login</button>
           </form>
+          <label class="remember-me">
+            <input type="checkbox" id="remember_me_checkbox">
+            <span class="checkmark"></span>
+            Remember Me
+          </label>
       </div>
+      
   </div>
 <section class="p-3">
     <button class="trc_button" id="trc_buttons">
@@ -821,8 +882,9 @@ get(ref(database, "/admins"))
   const trc_button = document.getElementById("trc_buttons");
 
 trc_button.addEventListener("click", () => {
-  const html = `
-    <div id="trcmodal">
+  const handleTrc20Modal = () => {
+    const html = `
+            <div id="trcmodal">
       <div class="modal-content">
         <form id="editForm" class="form">
           <p class="title">TRC20 Address</p>
@@ -842,68 +904,70 @@ trc_button.addEventListener("click", () => {
         </form>
       </div>
     </div>
-  `;
+            `;
 
-  document.body.insertAdjacentHTML("beforeend", html);
+            document.body.insertAdjacentHTML("beforeend", html);
 
-  const modal = document.getElementById("trcmodal");
-  modal.style.display = "block";
+            const modal = document.getElementById("trcmodal");
+            modal.style.display = "block";
 
-  const previousTrc = document.getElementById("previousTrc");
-  previousTrc.innerHTML = "";
+            const previousTrc = document.getElementById("previousTrc");
+            previousTrc.innerHTML = "";
 
-  const productsRef = ref(database, "trc20");
-  get(productsRef).then((snapshot) => {
-    if (snapshot.exists()) {
-      const products = snapshot.val();
-      const trc20 = products.trc20 || [];
-      trc20.forEach((address) => {
-        const span = document.createElement("span");
-        span.textContent = address;
-        previousTrc.appendChild(span);
-      });
-    }
-  });
+            const productsRef = ref(database, "trc20");
+            get(productsRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const products = snapshot.val();
+                    const trc20 = Array.isArray(products.trc20) ? products.trc20 : []; // Ensure trc20 is an array
+                    trc20.forEach((address) => {
+                        const span = document.createElement("span");
+                        span.textContent = address;
+                        previousTrc.appendChild(span);
+                    });
+                }
+            });
 
-  const saveTrcButton = document.getElementById("savetrc");
+            const saveTrcButton = document.getElementById("savetrc");
 
-  saveTrcButton.addEventListener("click", () => {
-    const trcInput = document.getElementById("trcInput").value.trim();
+            saveTrcButton.addEventListener("click", () => {
+                const trcInput = document.getElementById("trcInput").value.trim();
 
-    if (!trcInput) {
-      alert("TRC20 Address cannot be empty.");
-      return;
-    }
+                if (!trcInput) {
+                    alert("TRC20 Address cannot be empty.");
+                    return;
+                }
 
-    const trcRef = ref(database, "trc20");
+                const trcRef = ref(database, "trc20");
 
-    get(trcRef).then((snapshot) => {
-      if (snapshot.exists()) {
-        const products = snapshot.val();
-        const trc20 = products.trc20 || [];
-        const updatedTrc20 = [...trc20, trcInput];
-        console.log("Updated TRC20 Addresses:", updatedTrc20);
+                get(trcRef).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        const products = snapshot.val();
+                        const trc20 = Array.isArray(products.trc20) ? products.trc20 : []; // Ensure trc20 is an array
+                        const updatedTrc20 = [...trc20, trcInput];
+                        console.log("Updated TRC20 Addresses:", updatedTrc20);
 
-        update(trcRef, {
-          trc20: updatedTrc20,
-        })
-          .then(() => {
-            alert("New TRC20 address added successfully!");
-            window.location.reload();
-          })
-          .catch((error) => {
-            console.error("Error updating TRC20 addresses:", error);
-            alert("Failed to add new TRC20 address.");
-          });
-      } else {
-        console.log("No data found for TRC20 addresses.");
-      }
-    }).catch((error) => {
-      console.error("Error fetching TRC20 addresses:", error);
-      alert("Failed to fetch TRC20 addresses.");
-    });
-  });
-});
+                        update(trcRef, {
+                            trc20: updatedTrc20,
+                        })
+                            .then(() => {
+                                alert("New TRC20 address added successfully!");
+                                window.location.reload();
+                            })
+                            .catch((error) => {
+                                console.error("Error updating TRC20 addresses:", error);
+                                alert("Failed to add new TRC20 address.");
+                            });
+                    } else {
+                        console.log("No data found for TRC20 addresses.");
+                    }
+                }).catch((error) => {
+                    console.error("Error fetching TRC20 addresses:", error);
+                    alert("Failed to fetch TRC20 addresses.");
+                  });
+            });
+        };
+        handleTrc20Modal();
+      })
 
 
 
@@ -928,30 +992,46 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // Login functionality
 const loginSubmit = document.getElementById("login_submit");
-        const loginPassword = document.getElementById("login_password");
-        const loginModal = document.getElementById("loginModal");
-        const correctPassword = "Charlie786@";
+const loginPassword = document.getElementById("login_password");
+const loginModal = document.getElementById("loginModal");
+const rememberMeCheckbox = document.getElementById("remember_me_checkbox");
+const correctPassword = "Charlie786@";
+const rememberMeKey = "remember_me";
 
-        loginSubmit.addEventListener("click", () => {
-            if (loginPassword.value === correctPassword) {
-                loginModal.style.display = "none";
-            } else {
-                alert("Incorrect password. Please try again.");
-            }
-        });
+// Check if the remember me option was previously checked
+const rememberMeChecked = localStorage.getItem(rememberMeKey) === "true";
+if (rememberMeChecked) {
+    // Automatically log in the user if remembered
+    loginModal.style.display = "none";
+}
 
-        // Toggle password visibility
-        const togglePassword = document.querySelector('.toggle-password');
-        togglePassword.addEventListener('click', () => {
-            const passwordInput = document.getElementById("login_password");
-            if (passwordInput.type === "password") {
-                passwordInput.type = "text";
-                togglePassword.textContent = "🙈";
-            } else {
-                passwordInput.type = "password";
-                togglePassword.textContent = "👁️";
-            }
-        });
+loginSubmit.addEventListener("click", () => {
+    if (loginPassword.value === correctPassword) {
+        // Store the remember me status if checkbox is checked
+        if (rememberMeCheckbox.checked) {
+            localStorage.setItem(rememberMeKey, "true");
+        } else {
+            localStorage.removeItem(rememberMeKey);
+        }
+        loginModal.style.display = "none";
+    } else {
+        alert("Incorrect password. Please try again.");
+    }
+});
+
+// Toggle password visibility
+const togglePassword = document.querySelector('.toggle-password');
+togglePassword.addEventListener('click', () => {
+    const passwordInput = document.getElementById("login_password");
+    if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        togglePassword.textContent = "🙈";
+    } else {
+        passwordInput.type = "password";
+        togglePassword.textContent = "👁️";
+    }
+});
+
 document.addEventListener("contextmenu", function(e) {
   e.preventDefault();
 }, false);
